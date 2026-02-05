@@ -148,8 +148,8 @@
     </section>
 
     <section class="result" id="result">
-      <img src="love.result.gif" alt="chien coeur" />
-      <p>TROP BIENNNNNNN</p>
+      <img src="love-result.gif" alt="chien coeur" />
+      <p>TROP BIENNNNNNN🎉🎉🎉🎉</p>
     </section>
   </main>
 
@@ -202,7 +202,7 @@
     yesBtn.addEventListener("click", () => {
       // Cache les boutons, montre le gif
       area.style.display = "none";
-      hint.style.display = "none";
+      if (hint) hint.style.display = "none";
       result.style.display = "block";
       result.classList.add("fadeIn");
     });
