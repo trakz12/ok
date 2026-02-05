@@ -90,7 +90,6 @@
     }
     #yesBtn:hover{ filter: brightness(1.02); }
 
-    /* Le bouton NON est positionné en absolute pour pouvoir “fuir” */
     #noBtn{
       background: var(--no);
       color:#333;
@@ -100,12 +99,6 @@
       transform: translate(-50%, -50%);
       min-width: 120px;
       cursor: not-allowed;
-    }
-
-    .hint{
-      font-size:.9rem;
-      opacity:.75;
-      margin-top: 10px;
     }
 
     .result{
@@ -137,10 +130,9 @@
 
 <body>
   <main class="card">
-    <!-- Icône mignonne (optionnelle) -->
-    <img class="topIcon" src="heart.png.jpg" alt="icone" onerror="this.style.display='none'">
+    <img class="topIcon" src="heart.png" alt="icone" onerror="this.style.display='none'">
 
-    <h1>May, veux-tu être ma Valentine ?</h1>
+    <h1 id="question">May, veux-tu être ma Valentine ?</h1>
 
     <section class="buttonsArea" id="buttonsArea">
       <button id="yesBtn" type="button">Oui🫶</button>
@@ -149,7 +141,7 @@
 
     <section class="result" id="result">
       <img src="love-result.gif" alt="chien coeur" />
-      <p>TROP BIENNNNNNN🎉🎉🎉🎉</p>
+      <p>TROP BIENNNNNNN</p>
     </section>
   </main>
 
@@ -158,7 +150,6 @@
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
     const result = document.getElementById("result");
-    const hint = document.querySelector(".hint");
 
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
@@ -166,7 +157,6 @@
       const areaRect = area.getBoundingClientRect();
       const btnRect = noBtn.getBoundingClientRect();
 
-      // zone dispo (en restant dans la section)
       const pad = 8;
       const minX = pad;
       const minY = pad;
@@ -180,10 +170,6 @@
       noBtn.style.top  = `${y + btnRect.height/2}px`;
     }
 
-    // “Non” ne doit jamais être validé :
-    // - survol (souris)
-    // - tentative de clic (mousedown)
-    // - tactile (touchstart / pointerdown)
     ["mouseenter", "mousedown", "pointerdown", "touchstart"].forEach(evt => {
       noBtn.addEventListener(evt, (e) => {
         e.preventDefault();
@@ -192,7 +178,6 @@
       }, { passive: false });
     });
 
-    // Au cas où un "click" passe quand même (clavier / bug)
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -200,14 +185,12 @@
     });
 
     yesBtn.addEventListener("click", () => {
-      // Cache les boutons, montre le gif
       area.style.display = "none";
-      if (hint) hint.style.display = "none";
+      document.getElementById("question").style.display = "none";
       result.style.display = "block";
       result.classList.add("fadeIn");
     });
 
-    // Position initiale sympa
     moveNoButton();
   </script>
 </body>
