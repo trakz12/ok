@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine</title>
+  <style>
+    :root{
+      --bg1:#ffd6e7;
+      --bg2:#ffeef6;
+      --card:#ffffffcc;
+      --text:#1f1f1f;
+      --yes:#ff2d7a;
+      --yes2:#ff4d93;
+      --no:#f1f1f1;
+      --shadow: 0 18px 60px rgba(0,0,0,.15);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 30% 20%, var(--bg2), transparent 60%),
+                  radial-gradient(1000px 700px at 70% 80%, #ffe0ee, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(520px, 92vw);
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.55);
+      backdrop-filter: blur(10px);
+      border-radius:24px;
+      box-shadow: var(--shadow);
+      padding: 28px 22px;
+      text-align:center;
+      position:relative;
+    }
+
+    .topIcon{
+      width:72px;
+      height:72px;
+      object-fit:contain;
+      margin: 4px auto 10px;
+      display:block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.12));
+      user-select:none;
+      -webkit-user-drag:none;
+    }
+
+    h1{
+      font-size: 1.6rem;
+      margin: 10px 0 18px;
+      line-height:1.2;
+    }
+
+    .buttonsArea{
+      margin-top: 14px;
+      position:relative;
+      height: 88px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 18px;
+    }
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding: 14px 22px;
+      font-weight:700;
+      font-size:1.05rem;
+      cursor:pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,.12);
+      transition: transform .12s ease, filter .12s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    #yesBtn{
+      background: linear-gradient(135deg, var(--yes), var(--yes2));
+      color:white;
+      min-width: 140px;
+    }
+    #yesBtn:hover{ filter: brightness(1.02); }
+
+    /* Le bouton NON est positionné en absolute pour pouvoir “fuir” */
+    #noBtn{
+      background: var(--no);
+      color:#333;
+      position:absolute;
+      left: 62%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 120px;
+      cursor: not-allowed;
+    }
+
+    .hint{
+      font-size:.9rem;
+      opacity:.75;
+      margin-top: 10px;
+    }
+
+    .result{
+      display:none;
+      margin-top: 16px;
+    }
+    .result img{
+      width: min(360px, 80vw);
+      border-radius:18px;
+      box-shadow: 0 16px 50px rgba(0,0,0,.18);
+      user-select:none;
+      -webkit-user-drag:none;
+    }
+    .result p{
+      margin: 14px 0 0;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+
+    .fadeIn{
+      animation: fadeIn .25s ease-out both;
+    }
+    @keyframes fadeIn{
+      from{ opacity:0; transform: translateY(6px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <!-- Icône mignonne (optionnelle) -->
+    <img class="topIcon" src="heart.png.jpg" alt="icone" onerror="this.style.display='none'">
+
+    <h1>May, veux-tu être ma Valentine ?</h1>
+
+    <section class="buttonsArea" id="buttonsArea">
+      <button id="yesBtn" type="button">Oui🫶</button>
+      <button id="noBtn" type="button" aria-disabled="true">Non👎</button>
+    </section>
+
+    <section class="result" id="result">
+      <img src="love.result.gif" alt="chien coeur" />
+      <p>TROP BIENNNNNNN</p>
+    </section>
+  </main>
+
+  <script>
+    const area = document.getElementById("buttonsArea");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const result = document.getElementById("result");
+    const hint = document.querySelector(".hint");
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function moveNoButton() {
+      const areaRect = area.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // zone dispo (en restant dans la section)
+      const pad = 8;
+      const minX = pad;
+      const minY = pad;
+      const maxX = areaRect.width - btnRect.width - pad;
+      const maxY = areaRect.height - btnRect.height - pad;
+
+      const x = clamp(Math.random() * maxX, minX, maxX);
+      const y = clamp(Math.random() * maxY, minY, maxY);
+
+      noBtn.style.left = `${x + btnRect.width/2}px`;
+      noBtn.style.top  = `${y + btnRect.height/2}px`;
+    }
+
+    // “Non” ne doit jamais être validé :
+    // - survol (souris)
+    // - tentative de clic (mousedown)
+    // - tactile (touchstart / pointerdown)
+    ["mouseenter", "mousedown", "pointerdown", "touchstart"].forEach(evt => {
+      noBtn.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        moveNoButton();
+      }, { passive: false });
+    });
+
+    // Au cas où un "click" passe quand même (clavier / bug)
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      moveNoButton();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      // Cache les boutons, montre le gif
+      area.style.display = "none";
+      hint.style.display = "none";
+      result.style.display = "block";
+      result.classList.add("fadeIn");
+    });
+
+    // Position initiale sympa
+    moveNoButton();
+  </script>
+</body>
+</html>
